@@ -12,6 +12,7 @@
     "install": "npm run install-backend && npm run install-frontend",
     "sonar:up": "docker compose --profile tools up -d sonarqube",
     "sonar:scan": "docker compose --profile tools run --rm sonar-scanner",
-    "sonar:down": "docker compose --profile tools down"
+    "sonar:down": "docker compose --profile tools down",
+    "validate:agents": "node scripts/validate-agents.js"
   }
 }
