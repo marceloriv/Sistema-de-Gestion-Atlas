@@ -1,0 +1,11 @@
+BACKEND/node_modules
+FRONTEND/node_modules
+
+# SonarQube
+.scannerwork/
+BACKEND/.scannerwork/
+FRONTEND/.scannerwork/
+
+*.env
+*.log
+*.logs
