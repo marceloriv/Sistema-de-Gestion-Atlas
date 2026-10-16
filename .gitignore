@@ -9,3 +9,6 @@ FRONTEND/.scannerwork/
 *.env
 *.log
 *.logs
+
+# Superpowers SDD workspace
+.superpowers/
