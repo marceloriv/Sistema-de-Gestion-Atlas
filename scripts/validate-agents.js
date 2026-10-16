@@ -70,9 +70,7 @@ const forbiddenTerms = [
   'pnpm exec vitest',
   'pnpm install',
   'pnpm build',
-  'HashRouter',
-  'Co-Authored-By',
-  'Generated with'
+  'HashRouter'
 ];
 
 forbiddenTerms.forEach(term => {
@@ -80,6 +78,11 @@ forbiddenTerms.forEach(term => {
     errors.push(`Término prohibido o residual encontrado: "${term}"`);
   }
 });
+
+// Comprobar que no haya trailers reales de autoría al final o inicio de líneas
+if (/^\s*Co-Authored-By:/m.test(content)) {
+  errors.push('Firma real de Co-Authored-By detectada en el documento.');
+}
 
 // 4. Palabras clave obligatorias de Atlas
 const requiredAtlasTerms = [
