@@ -479,7 +479,7 @@ Directo de conventionalcommits.org v1.0.0 — violar cualquiera de estas invalid
 
 - Idioma: sujeto, cuerpo y footer en español. Tipo siempre en inglés (`feat`, `fix`, `style`, `refactor`, `test`, `chore`, `docs`, `perf`).
 - Sujeto: imperativo presente, minúsculas, sin punto final, $\le 72$ chars (ideal 50). Detalle en el cuerpo, nunca en el sujeto.
-- Alcance opcional en kebab-case, lista adaptada a Atlas: `backend`, `frontend`, `db`, `auth`, `clientes`, `contratos`, `empresas`, `usuarios`, `auditoria`, `docker`, `sonar`, `deps`, `docs`, `test`.
+- Alcance opcional en kebab-case, lista adaptada a Atlas: `backend`, `frontend`, `db`, `auth`, `clientes`, `contratos`, `empresas`, `usuarios`, `auditoria`, `docker`, `sonar`, `deps`, `docs`, `test`, `agents`.
 - Cuerpo: qué y por qué, nunca cómo (el diff ya dice cómo). Un commit = un cambio lógico.
 - Footer: `Closes #N`/`Fixes #N` para issues; breaking change siempre documentado en footer aunque ya lleve `!` en el header.
 - Enforcement mecánico: verificación en revisión de PRs y convenciones de agentes.
@@ -628,7 +628,7 @@ Regla de dedo: si algo importa y **puede** verificarse mecánicamente, no dejarl
 
 Tratar como código. Revisar cada sprint o hito académico de la asignatura ISY1102. Si una convención cambia o se incorporan nuevos módulos, actualizar este archivo como fuente única de verdad.
 
-Si otra herramienta requiere su propio archivo de reglas (`CLAUDE.md`, `.cursorrules`), referenciar o symlinkear este archivo hacia él en vez de duplicar contenido — una sola fuente de verdad.
+Si otra herramienta requiere su propio archivo de reglas (`CLAUDE.md`, `.cursorrules`), referenciar o symlinkear este archivo hacia él en vez de duplicar contenido — una sola fuente de verdad. En entornos Windows donde la creación de enlaces simbólicos requiera privilegios elevados de Administrador, se autoriza y recomienda el uso de archivos puntero directos (`.cursorrules` y `CLAUDE.md`) con enlace en Markdown a `./AGENTS.md`.
 
 
 ## 17. Normativa y cumplimiento
