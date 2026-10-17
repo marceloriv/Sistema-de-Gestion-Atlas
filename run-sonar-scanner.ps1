@@ -8,7 +8,7 @@
 $ErrorActionPreference = "Stop"
 
 Write-Host "==> Ejecutando Sonar-Scanner CLI..." -ForegroundColor Cyan
-docker compose --project-directory $PSScriptRoot --profile tools run --rm sonar-scanner
+docker compose --project-directory $PSScriptRoot --profile tools run --rm -u 0:0 sonar-scanner
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "==> Falló la ejecución del scanner (código $LASTEXITCODE)." -ForegroundColor Red
