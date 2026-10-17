@@ -1,8 +1,8 @@
 # AGENTS.md
 
-`AGENTS.md` es un formato abierto: un Markdown en la raíz del repositorio que los agentes de código leen antes de actuar. Se formalizó como especificación abierta en agosto de 2025 (impulsada por OpenAI con Google, Cursor y Factory) y hoy la mantiene la Agentic AI Foundation, bajo la Linux Foundation. Lo leen de forma nativa Codex, Cursor, Copilot, Gemini CLI, Aider, Windsurf, Zed y otras herramientas — por eso conviene mantener **un** archivo y symlinkear los formatos propietarios hacia él (16), en vez de sostener copias que divergen.
+`AGENTS.md` es un formato abierto: un Markdown en la raíz del repositorio que los agentes de código leen antes de actuar. Se formalizó como especificación abierta en agosto de 2025 (impulsada por OpenAI con Google, Cursor y Factory) y hoy la mantiene la Agentic AI Foundation, bajo la Linux Foundation. Lo leen de forma nativa Codex, Cursor, Copilot, Gemini CLI, Aider, Windsurf, Zed y otras herramientas — por eso conviene mantener **un** archivo y symlinkear los formatos propietarios hacia él, en vez de sostener copias que divergen.
 
-La especificación no impone secciones: define el lugar y la regla de precedencia (14). Todo lo que sigue es la convención de este equipo, no el estándar.
+La especificación no impone secciones: define el lugar y la regla de precedencia en el repositorio. Todo lo que sigue es la convención de este equipo, no el estándar.
 
 **Para el agente que trabaje con esta plantilla:**
 
@@ -328,11 +328,11 @@ Cobertura mínima: 80% en lógica de negocio y componentes principales (control 
 
 **Qué cobertura se mide** — el número solo significa algo si se dice de qué tipo es:
 
-| Tipo | Qué garantiza | Cuándo exigirla |
-| --- | --- | --- |
-| Línea | la línea se ejecutó | piso mínimo; una línea ejecutada puede seguir estando mal |
-| Rama (*branch*) | cada rama de cada condicional se tomó en ambos sentidos | default recomendado para lógica con `if`/`switch` y autorización |
-| Mutación | el test **falla** si se altera la lógica | en el núcleo crítico (aislamiento multi-tenant por `empresa_id` y validación de tokens JWT) |
+| Tipo            | Qué garantiza                                           | Cuándo exigirla                                                                             |
+| --------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Línea           | la línea se ejecutó                                     | piso mínimo; una línea ejecutada puede seguir estando mal                                   |
+| Rama (*branch*) | cada rama de cada condicional se tomó en ambos sentidos | default recomendado para lógica con `if`/`switch` y autorización                            |
+| Mutación        | el test **falla** si se altera la lógica                | en el núcleo crítico (aislamiento multi-tenant por `empresa_id` y validación de tokens JWT) |
 
 Cobertura alta con asserts débiles es cobertura falsa: un test que ejecuta código sin afirmar nada sube el porcentaje y no detecta nada. Si el umbral se persigue a costa de asserts triviales, el umbral está haciendo daño.
 
@@ -344,7 +344,7 @@ Framework:
 - Frontend: Vitest + `@testing-library/react`. Ubicación: `FRONTEND/src/tests/` exclusivamente.
 - Backend: Supertest + Vitest/Jest. Ubicación: `BACKEND/tests/` exclusivamente.
 
-Técnica de diseño de casos declarada por caso no trivial (partición de equivalencia, valores límite, tabla de decisión) — están tipificadas en ISO/IEC/IEEE 29119-4, ver 17.3; elegir la técnica es parte del trabajo, no un adorno documental.
+Técnica de diseño de casos declarada por caso no trivial (partición de equivalencia, valores límite, tabla de decisión) — tipificadas en ISO/IEC/IEEE 29119-4; elegir la técnica es parte del trabajo, no un adorno documental.
 
 ```jsx
 import { describe, it, expect, beforeEach, vi } from "vitest";
@@ -384,19 +384,19 @@ describe("ClienteRapidoForm", () => {
 });
 ```
 
-Si el proyecto exige proceso formal de pruebas (plan documentado, diseño de casos con técnica declarada, registro de ejecución y de defectos) según ISO/IEC/IEEE 29119 o IEEE 730 — ver 17.3. La cobertura de arriba es métrica; 29119 es proceso, no se reemplazan.
+Si el proyecto exige proceso formal de pruebas (plan documentado, diseño de casos con técnica declarada, registro de ejecución y de defectos) según ISO/IEC/IEEE 29119 o IEEE 730: la cobertura es métrica, el estándar de pruebas es proceso, no se reemplazan.
 
 ## 8. Métricas de claridad
 
 Umbrales de referencia (McCabe / SonarQube) — adaptados a la configuración multi-módulo del repositorio en `sonar-project.properties`:
 
-| Métrica | Umbral | Cómo medir |
-| --- | --- | --- |
+| Métrica                 | Umbral                                               | Cómo medir                                                      |
+| ----------------------- | ---------------------------------------------------- | --------------------------------------------------------------- |
 | Complejidad ciclomática | $\le 10$ por función (hasta 15 en rutas no críticas) | SonarQube (`http://localhost:9000`) / regla ESLint `complexity` |
-| Complejidad cognitiva | $\le 15$ por función | SonarQube módulo `atlas_backend` y `atlas_frontend` |
-| Longitud de función | $\le 40$ líneas | Revisión en SonarQube y linter |
-| Nesting | $\le 3$ niveles | SonarQube / revisión manual |
-| Docstrings/JSDoc | obligatorio en funciones públicas y utilidades | Revisión en PR |
+| Complejidad cognitiva   | $\le 15$ por función                                 | SonarQube módulo `atlas_backend` y `atlas_frontend`             |
+| Longitud de función     | $\le 40$ líneas                                      | Revisión en SonarQube y linter                                  |
+| Nesting                 | $\le 3$ niveles                                      | SonarQube / revisión manual                                     |
+| Docstrings/JSDoc        | obligatorio en funciones públicas y utilidades       | Revisión en PR                                                  |
 
 **Ciclomática vs cognitiva — no son la misma métrica y no se sustituyen:** la ciclomática cuenta caminos de ejecución (predice cuántos tests hacen falta); la cognitiva, propuesta por SonarSource, mide cuán difícil es de *entender* para una persona: penaliza el anidamiento y no castiga estructuras que se leen de corrido (un `switch` plano suma poco, tres `if` anidados suman mucho). Un `switch` de 12 casos dispara la ciclomática y es trivial de leer; un método con 3 niveles de anidamiento puede tener ciclomática baja y ser ilegible. Si solo se mide una, se optimiza la métrica equivocada.
 
@@ -406,17 +406,17 @@ Umbrales de referencia (McCabe / SonarQube) — adaptados a la configuración mu
 
 Checklist pre-entrega: tests en verde, linter limpio (`npm run lint`), sin secretos hardcodeados en código commiteado, sin SQL injection (consultas parametrizadas con `$1, $2`), SonarQube Quality Gate superado sin vulnerabilidades críticas o altas, Swagger/OpenAPI sincronizado en `BACKEND/src/openapi.json`.
 
-| Severidad | Acción | Equivalente CVSS v4.0 (si el hallazgo es de seguridad) |
-| --- | --- | --- |
-| Crítico | bloquea el merge | Critical 9.0–10.0 / High 7.0–8.9 |
-| Mayor | corregir antes del merge salvo excepción documentada | Medium 4.0–6.9 |
-| Menor | issue de seguimiento post-merge | Low 0.1–3.9 |
+| Severidad | Acción                                               | Equivalente CVSS v4.0 (si el hallazgo es de seguridad) |
+| --------- | ---------------------------------------------------- | ------------------------------------------------------ |
+| Crítico   | bloquea el merge                                     | Critical 9.0–10.0 / High 7.0–8.9                       |
+| Mayor     | corregir antes del merge salvo excepción documentada | Medium 4.0–6.9                                         |
+| Menor     | issue de seguimiento post-merge                      | Low 0.1–3.9                                            |
 
 La columna CVSS aplica solo a vulnerabilidades: un bug funcional grave puede ser Crítico sin tener puntaje CVSS. Escala completa de CVSS v4.0: None 0.0, Low 0.1–3.9, Medium 4.0–6.9, High 7.0–8.9, Critical 9.0–10.0 — no reinventar bandas propias cuando la herramienta de escaneo ya entrega esta.
 
 Plazo de corrección por severidad: Crítico `inmediato antes de merge`, Mayor `3 días`, Menor `backlog priorizado`. Una excepción documentada necesita dueño y fecha de vencimiento, no solo justificación.
 
-Si el proyecto declara ISO/IEC 25010 (17.1), los atributos de calidad de esa norma son los criterios de aceptación de este checklist — no una lista paralela: cada atributo se verifica con el umbral fijado en 17.1.
+Si el proyecto declara ISO/IEC 25010, los atributos de calidad de esa norma son los criterios de aceptación de este checklist — no una lista paralela.
 
 ## 10. Seguridad
 
@@ -424,7 +424,7 @@ Nunca commitear secretos, tokens o credenciales. Validar inputs en toda frontera
 
 Dónde viven los secretos reales: En el archivo `.env` en la raíz del repositorio (ignorado en `.gitignore`), referenciado por Docker Compose (`JWT_SECRET`, `POSTGRES_PASSWORD`, `SONAR_TOKEN`). Jamás incluir credenciales en código fuente ni commitear archivos `.env`.
 
-Los controles de esta sección son la implementación técnica de ISO/IEC 27001 (confidencialidad, integridad, disponibilidad) — ver 17.2 — y de la Ley 21.719 de Protección de Datos Personales en Chile (17.4).
+Los controles de esta sección son la implementación técnica de confidencialidad, integridad y disponibilidad (ISO/IEC 27001), de la Ley 21.719 de Protección de Datos Personales en Chile y de la Ley 21.459 sobre delitos informáticos.
 
 **Contexto de partida pedagógico y remediación:** Este repositorio contiene código inicial intencionalmente vulnerable (contraseñas en texto plano, falta de sanitización, secretos por defecto). Los siguientes controles representan los estándares objetivos de seguridad que todo cambio debe cumplir y hacer cumplir:
 
@@ -522,13 +522,13 @@ feature          (feature/gestion-clientes)
 
 **Estructura de ramas:**
 
-| Rama | Rol | Convención |
-| --- | --- | --- |
-| `main` | Rama permanente de producción. Siempre verde, etiquetada con tags semánticos (`vX.Y.Z`). | Protegida; solo recibe merges desde `release/*` o `hotfix/*`. |
-| `develop` | Rama permanente de integración y desarrollo activo. Base para nuevas características. | Protegida; recibe merges desde `feature/*`, `release/*` y `hotfix/*`. |
-| `feature/*` | Ramas temporales de nueva funcionalidad. Nace de `develop` y mergea a `develop`. | `feature/descripcion-corta` |
-| `release/*` | Ramas temporales de preparación de release (bump de versión y CHANGELOG). Nace de `develop`, mergea a `main` y a `develop`. | `release/vX.Y.Z` |
-| `hotfix/*` | Ramas temporales de corrección crítica en producción. Nace de `main`, mergea a `main` y a `develop`. | `hotfix/descripcion-corta` |
+| Rama        | Rol                                                                                                                         | Convención                                                            |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `main`      | Rama permanente de producción. Siempre verde, etiquetada con tags semánticos (`vX.Y.Z`).                                    | Protegida; solo recibe merges desde `release/*` o `hotfix/*`.         |
+| `develop`   | Rama permanente de integración y desarrollo activo. Base para nuevas características.                                       | Protegida; recibe merges desde `feature/*`, `release/*` y `hotfix/*`. |
+| `feature/*` | Ramas temporales de nueva funcionalidad. Nace de `develop` y mergea a `develop`.                                            | `feature/descripcion-corta`                                           |
+| `release/*` | Ramas temporales de preparación de release (bump de versión y CHANGELOG). Nace de `develop`, mergea a `main` y a `develop`. | `release/vX.Y.Z`                                                      |
+| `hotfix/*`  | Ramas temporales de corrección crítica en producción. Nace de `main`, mergea a `main` y a `develop`.                        | `hotfix/descripcion-corta`                                            |
 
 **Flujo de trabajo para Releases:**
 
@@ -576,173 +576,3 @@ git branch -d release/v1.0.0
 - Comunicación hacia afuera del repositorio: comentar en issues externos o interactuar con servicios de terceros.
 
 El criterio de fondo: **lo reversible dentro del repo se hace; lo que borra datos, expone secretos o reescribe historial compartido se pregunta.**
-
-## 13. Deploy
-
-Sistema de Gestión Atlas es una aplicación cliente-servidor contenerizada desplegada mediante Docker Compose en red interna aislada (`atlas-network`).
-
-El despliegue local o de servidor ejecuta:
-1. `docker compose build --pull` (construcción reproducible del frontend Nginx y backend Node.js)
-2. `docker compose up -d` (arranque orquestado con healthchecks en PostgreSQL)
-3. Verificación de disponibilidad de servicios en puertos expuestos (Frontend en `3350`, Backend en `4450`, PostgreSQL en `15432`)
-
-Verificación local y rollback:
-
-```bash
-# Verificación de estado y salud de contenedores
-docker compose ps
-
-# Revisar logs consolidados ante fallos
-docker compose logs -f
-
-# Rollback de emergencia (revertir commit defectuoso y reconstruir contenedores)
-git revert HEAD
-docker compose up -d --build
-```
-
-## 14. Monorepo
-
-**Aplica plenamente:** Repositorio multi-módulo que aloja el submódulo de backend en `BACKEND/` (Node.js/Express + PostgreSQL) y el submódulo de frontend en `FRONTEND/` (React 19 + Vite), orquestados centralmente desde la raíz mediante:
-- `package.json` raíz con scripts agregados para instalación y análisis (`npm run install`, `npm run sonar:scan`).
-- `docker-compose.yml` que construye y conecta ambos servicios y la base de datos relacional.
-- Configuración multi-módulo centralizada en `sonar-project.properties` mediante la directiva `sonar.modules=backend,frontend` apuntando a las claves `atlas_backend` y `atlas_frontend`.
-
-## 15. Enforcement
-
-Este archivo es orientativo, no mecánicamente forzado — un agente puede omitir *aplicar* una regla si la juzga innecesaria para el cambio puntual, pero eso no autoriza *borrar o resumir* el texto de la regla en el archivo mismo (ver bloque anti-poda al inicio). Las reglas críticas (secretos, cobertura mínima, linter, SonarQube) deben reforzarse además con hooks locales y quality gates.
-
-**Qué regla se refuerza dónde:**
-
-| Regla | Hook local (pre-commit) | Análisis / CI (bloqueante) | Solo texto |
-| --- | --- | --- | --- |
-| Secretos y credenciales (10) | escaneo de `.env` y secretos antes del commit | análisis estático de SonarQube |  |
-| Formato y linter (5, 8) | `npm run lint` en frontend | validación en verde obligatoria |  |
-| Mensaje de commit (11) | validación de formato Conventional Commit + Gitmoji | validación de rango de PR |  |
-| Cobertura y pruebas (7) | pruebas unitarias críticas rápidas | suite completa de pruebas como quality gate |  |
-| Ramas y protecciones (11.3) |  | branch protection en repositorio remoto |  |
-| Criterio de diseño, límites del agente (6, 12) |  |  | sí: no son automatizables |
-
-Regla de dedo: si algo importa y **puede** verificarse mecánicamente, no dejarlo solo escrito acá. Si no puede, escribirlo con el porqué — es lo único que lo sostiene.
-
-## 16. Mantenimiento
-
-Tratar como código. Revisar cada sprint o hito académico de la asignatura ISY1102. Si una convención cambia o se incorporan nuevos módulos, actualizar este archivo como fuente única de verdad.
-
-Si otra herramienta requiere su propio archivo de reglas (`CLAUDE.md`, `.cursorrules`), referenciar o symlinkear este archivo hacia él en vez de duplicar contenido — una sola fuente de verdad. En entornos Windows donde la creación de enlaces simbólicos requiera privilegios elevados de Administrador, se autoriza y recomienda el uso de archivos puntero directos (`.cursorrules` y `CLAUDE.md`) con enlace en Markdown a `./AGENTS.md`.
-
-
-## 17. Normativa y cumplimiento
-
-Normas que aplican realmente a este proyecto: ISO/IEC 25010 (calidad del software y accesibilidad WCAG 2.2 AA con foco prioritario en adultos mayores), ISO/IEC 27001 (SGSI aplicado a base de datos relacional y APIs seguras), ISO 9001:2015 / ISO/IEC/IEEE 29119 (marco de calidad y pruebas en ISY1102), y legislación chilena: Ley 21.719 (protección de datos personales de clientes, usuarios y contratos) y Ley 21.459 (delitos informáticos y trazabilidad de auditoría). Ninguna aplica por defecto solo porque está listada acá; las que no aplican se marcan `(no aplica: <razón>)` en su subsección, no se borran (regla anti-poda del inicio del archivo).
-
-Esta sección es la única fuente del marco normativo. Lo que ya está operacionalizado en 7, 8, 9 y 10 se referencia desde acá, no se vuelve a escribir.
-
-### 17.1 ISO/IEC 25010 — atributos de calidad del producto
-
-Define qué es un software de calidad en atributos medibles. Cada fila fija el umbral; la implementación vive en la sección referenciada.
-
-Modelo de calidad del producto, edición 2023: 9 características, cada una con subcaracterísticas propias. Declarar cuáles aplican y con qué umbral — una característica sin umbral no es verificable, es decoración.
-
-| Característica | Subcaracterísticas (2023) | Qué exige en este proyecto | Cómo se verifica |
-| --- | --- | --- | --- |
-| Aptitud funcional | completitud, corrección, adecuación funcional | el sistema gestiona integralmente clientes, contratos con PDFs, usuarios y auditoría multi-tenant según los requisitos del Caso A | trazabilidad requisito $\to$ test (7); cobertura de endpoints en `BACKEND/tests/` |
-| Eficiencia de desempeño | comportamiento temporal, uso de recursos, capacidad | tiempo de respuesta de API < 200ms en condiciones normales (eliminando el delay pedagógico de 4s para pruebas de carga); bundle de frontend comprimido | latencia en endpoints de Express y tamaño de bundle en `FRONTEND/dist/` optimizado con Vite |
-| Compatibilidad | coexistencia, interoperabilidad | intercambio de datos estandarizado en formato JSON y contratos REST documentados | especificación OpenAPI 3.0 servida en `/docs` y validación de tipos en frontend |
-| Capacidad de interacción *(era Usabilidad)* | reconocibilidad, aprendibilidad, operabilidad, protección contra errores de usuario, involucramiento, inclusividad, asistencia al usuario, autodescripción | **Especial atención y prioridad a la usabilidad para adultos mayores**: interfaz altamente legible, contraste adecuado, áreas de toque amplias y mensajes de error comprensibles | WCAG 2.2 AA, tap targets $\ge 44\text{ px}$, contraste $\ge 4.5:1$, tipografía Poppins $\ge 14\text{ px}$, botones descriptivos; tokens en `FRONTEND/src/theme.js` |
-| Fiabilidad | ausencia de fallos *(antes madurez)*, disponibilidad, tolerancia a fallos, recuperabilidad | resiliencia ante pérdidas temporales de conexión a base de datos y degradación limpia de errores | reconexión del pool de PostgreSQL en `db.js`, healthchecks en Docker Compose (`pg_isready`) y pruebas de camino de error (7) |
-| Seguridad | confidencialidad, integridad, no repudio, responsabilidad *(accountability)*, autenticidad, resistencia | 25010 la exige como atributo; 10 y 17.2 la implementan | 0 hallazgos de severidad Crítico o Alto en SonarQube; aislamiento estricto por `empresaId`; remediación de contraseñas en texto plano (10) |
-| Mantenibilidad | modularidad, reusabilidad, analizabilidad, modificabilidad, testeabilidad | complejidad ciclomática y cognitiva acotadas, funciones breves y arquitectura desacoplada por router/componente | umbrales de 8 en verde en SonarQube + cobertura $\ge 80\%$ de 7 |
-| Flexibilidad *(era Portabilidad)* | adaptabilidad, instalabilidad, reemplazabilidad, escalabilidad | despliegue estandarizado en contenedores Docker y compatibilidad con múltiples resoluciones (desktop, tablet, mobile) | `docker compose up -d` corriendo sin errores; diseño responsive verificado desde 320px |
-| Safety *(nueva en 2023)* | restricción operacional, identificación de riesgos, comportamiento a prueba de fallos, advertencia de peligro, integración segura | solo si el software puede causar daño a personas, equipos o entorno (control industrial, salud, vehículos, hardware) | `(no aplica: software de gestión empresarial y documental sin control de hardware físico)` |
-
-**Qué cambió de 2011 a 2023** (importa si el proyecto arrastra documentación vieja o cita la norma en un contrato):
-
-- **Usabilidad** $\to$ **Capacidad de interacción**; se agregan *inclusividad*, *autodescripción* e *involucramiento del usuario* (este último reemplaza a "estética de la interfaz"), y la antigua *accesibilidad* se divide en inclusividad y asistencia al usuario.
-- **Portabilidad** $\to$ **Flexibilidad**, con *escalabilidad* como subcaracterística nueva.
-- **Safety** es la única característica nueva: distinta de Security — una protege del atacante, la otra del accidente.
-- En Fiabilidad, *madurez* pasó a llamarse *ausencia de fallos*; en Seguridad se suma *resistencia*.
-
-Usar los nombres de 2023 en informes y contratos. Si una característica no aplica, dejar `(no aplica: <razón>)` en su fila — no borrarla.
-
-Regla: un atributo con sección propia (Seguridad 10, Mantenibilidad 8, Fiabilidad vía 7) no se re-documenta acá — 17.1 solo fija el umbral y apunta.
-
-### 17.2 ISO/IEC 27001 — SGSI (confidencialidad, integridad, disponibilidad)
-
-Protege la información sensible que el software procesa. Acá va el control implementado en el software; la política organizacional vive fuera del repo y se referencia, no se copia.
-
-| Propiedad | Control mínimo en el software | Evidencia |
-| --- | --- | --- |
-| Confidencialidad | aislamiento multi-tenant por `empresaId` en consultas a PostgreSQL; contraseñas con hash seguro (bcrypt/argon2id); tokens JWT en cabecera Bearer; archivos PDF protegidos contra descargas no autorizadas (10) | cláusulas `WHERE empresa_id = $X` en todas las rutas de `BACKEND/src/routes/`; sin contraseñas en texto plano expuestas en BD ni JSON |
-| Integridad | validación de esquemas en endpoints; integridad referencial en PostgreSQL con foreign keys; consultas SQL parametrizadas ($1, $2); transacciones atómicas (`BEGIN`/`COMMIT`/`ROLLBACK`); trazabilidad en tabla `auditoria` | DDL en `sql/init.sql`, consultas parametrizadas en endpoints y registro inmutable en tabla `auditoria` |
-| Disponibilidad | arquitectura contenerizada en Docker Compose con políticas de reinicio automático y persistencia en volúmenes | healthchecks en `docker-compose.yml`, volumen persistente `postgres_data` y scripts de volcado `dump-atlas.sql` |
-
-**Controles del Anexo A (27001:2022) que caen del lado del repositorio** — el resto del Anexo es organizacional y no se resuelve en el código:
-
-| Control | Nombre | Dónde vive en este proyecto |
-| --- | --- | --- |
-| A.8.2 / A.8.3 | Derechos de acceso privilegiado / Restricción de acceso a la información | autorización por roles (`administrador`, `editor`) con `RoleGuard` en frontend y verificación de `empresaId` en backend (10) |
-| A.8.4 | Acceso al código fuente | permisos del repositorio en Git y protección de ramas `main` y `develop` (11.3) |
-| A.8.5 | Autenticación segura | 10: tokens JWT con expiración estricta y remediación obligatoria de hashing robusto para contraseñas |
-| A.8.8 | Gestión de vulnerabilidades técnicas | 10 A03: dependencias auditadas en `package.json` vía `npm audit` y escaneo continuo en SonarQube |
-| A.8.9 | Gestión de configuración | 10 A02: variables en `.env` (ignorado en git), Express sin `x-powered-by`, Dockerfile con non-root user |
-| A.8.10 / A.8.11 | Eliminación de información / Enmascaramiento de datos | borrado de contratos y clientes respetando integridad referencial; jamás exponer hashes o contraseñas en respuestas de la API |
-| A.8.12 | Prevención de fuga de datos | respuestas de error sanitizadas `{ error, glosa }` sin filtrar stack traces ni datos internos de base de datos |
-| A.8.13 | Respaldo de la información | respaldo periódico mediante `pg_dump` y scripts en `BACKEND/sql/dump-atlas.sql` |
-| A.8.15 / A.8.16 | Registro / Actividades de monitoreo | tabla `auditoria` en PostgreSQL y logging de solicitudes con Morgan en backend |
-| A.8.24 | Uso de criptografía | JWT con HMAC-SHA256, hash de contraseñas con bcrypt/argon2id; cero criptografía inventada |
-| A.8.25–A.8.29 | Ciclo de desarrollo seguro, requisitos de seguridad de la aplicación, principios de arquitectura segura, codificación segura y pruebas de seguridad en desarrollo y aceptación | Secciones 5, 7, 9, 10 completas — es el bloque que este archivo satisface de forma más directa |
-
-Edición vigente: **ISO/IEC 27001:2022**. Su Anexo A trae 93 controles agrupados en 4 temas — organizacionales (37), personas (8), físicos (14) y tecnológicos (34, los `A.8.x` de la tabla) — reestructurados respecto de los 114 controles en 14 dominios de la edición 2013: si el proyecto arrastra un mapeo viejo, migrarlo antes de declararlo cumplido.
-
-27001 es un sistema de gestión, no un checklist técnico: certificar exige alcance, análisis de riesgo, declaración de aplicabilidad y auditoría a nivel organización. Lo que este archivo puede garantizar es el control técnico de las tablas de arriba.
-
-### 17.3 ISO 9001 / IEEE 730 / ISO/IEC/IEEE 29119 — proceso y pruebas
-
-- **ISO 9001:2015** (gestión de calidad): procesos consistentes y mejora continua; base de las certificaciones que se apoyan en ella. En este repo se materializa en 9 (checklist pre-entrega + tabla de severidad), 11 (convención de commits y ramas) y 15 (enforcement por SonarQube y hooks). Contexto: Caso A de la asignatura ISY1102. Hay una revisión en curso (ISO 9001:2026, FDIS en balotaje desde abril de 2026, publicación esperada para fines de 2026 con 3 años de transición) — confirmar edición antes de citarla en un contrato.
-- **IEEE 730** (Software Quality Assurance Processes): edición vigente **730-2026**, que reemplaza a 730-2014 (inactivada en marzo de 2025) y se armoniza con ISO/IEC/IEEE 12207:2017. Si el proyecto exige SQAP formal: `(no aplica: proyecto académico de software ágil sin requerimiento de SQAP formal corporativo)`.
-- **ISO/IEC/IEEE 29119** (pruebas de software), 5 partes con ediciones distintas: **29119-1:2022** (conceptos generales), **-2:2021** (procesos de prueba), **-3:2021** (documentación; sus plantillas están organizadas según el proceso de la parte 2, y el Anexo A mapea cada documento contra ella), **-4:2021** (técnicas de diseño de casos), **-5:2024** (keyword-driven testing). Exige plan de pruebas documentado, diseño de casos con **técnica declarada** (partición de equivalencia, valores límite, tabla de decisión — tipificadas en la parte 4, no elegidas al azar), y registro de ejecución y de defectos. Complementa 7, no lo reemplaza: cobertura es métrica, 29119 es proceso. Artefactos: plan en `docs/superpowers/plans/` y casos en `BACKEND/tests/` y `FRONTEND/src/tests/`.
-
-**Mapeo de cláusulas ISO 9001:2015 contra este repositorio** — útil para una auditoría: cada cláusula pregunta por evidencia, no por intención.
-
-| Cláusula | Qué pide | Evidencia en este proyecto |
-| --- | --- | --- |
-| 4. Contexto de la organización | alcance del sistema de gestión y partes interesadas | 1 (resumen del proyecto Atlas, usuarios corporativos y adultos mayores) |
-| 5. Liderazgo | responsabilidades y autoridades definidas | 12 (límites del agente) + roles de administradores y editores |
-| 6. Planificación | riesgos, oportunidades y objetivos de calidad | 17.1 (umbrales por atributo) + especificaciones en `docs/superpowers/specs/` |
-| 7. Apoyo | competencia, información documentada y su control | este archivo + 16 (mantenimiento) + historial de git |
-| 8. Operación | control de diseño, desarrollo y cambios | 5, 7, 11 (commits, ramas Git Flow, PR), 13 (deploy Docker) |
-| 9. Evaluación del desempeño | seguimiento, medición, auditoría interna | 8 (métricas SonarQube), 9 (checklist y severidad), tabla `auditoria` en PostgreSQL |
-| 10. Mejora | no conformidades, acción correctiva, mejora continua | tabla de severidad de 9 + análisis estático en SonarQube (`http://localhost:9000`) |
-
-Si el proyecto no persigue certificación corporativa, esta tabla igual sirve como checklist de trazabilidad: una fila sin evidencia es un punto ciego real, no un trámite.
-
-### 17.4 Cruce con normativa chilena
-
-Ninguna norma ISO se aplica en el vacío: cada una respalda o se cruza con una obligación legal vigente.
-
-| Norma ISO | Ley chilena | Punto de cruce | Qué exige en este repo |
-| --- | --- | --- | --- |
-| ISO/IEC 27001 | Ley 19.628, sustituida en lo sustantivo por la **Ley 21.719** (publicada 13-12-2024, entrada en vigencia original: **1-12-2026** — posible postergación a 2027 por demora en conformación de la Agencia de Protección de Datos Personales, APDP) | cifrado, control de accesos y trazabilidad que exige la ley se implementan como controles 27001 (17.2) | inventario de datos personales tratados en clientes, usuarios y contratos; base de licitud; log de auditoría; y procedimiento de **notificación de brechas** |
-| ISO/IEC 25010 | Ley 21.180 (transformación digital del Estado; vigente desde el 9-06-2022, aplicación gradual por servicio hasta el 31-12-2027) | interoperabilidad y trazabilidad de sistemas públicos se miden con los atributos de 25010 (17.1) | `(no aplica: software privado empresarial / caso académico ISY1102, no tramitación estatal pública)` |
-| ISO 9001 | CMF **NCG 519** (2024, modifica NCG 461) — introduce NIIF S1/S2 obligatorias desde ejercicio 2026, exige diversidad de género en ternas a directorio, amplía métricas SASB | transparencia y reportabilidad en memorias anuales se apoyan en procesos de calidad certificables (17.3) | `(no aplica: entidad independiente no regulada por la CMF)` |
-| ISO/IEC 27001 | **Ley 21.459** (delitos informáticos; vigente desde 20-06-2022, reemplazó Ley 19.223) | responsabilidad penal por delitos de acceso ilícito, daño informático e interceptación; alineación con Convenio de Budapest | controles de seguridad que prevengan acceso no autorizado, sanitización SQL para evitar daño en BD, logs de auditoría inmutables en tabla `auditoria` |
-| ISO/IEC 25010 | **Ley 21.643** (Ley Karin; vigente desde 01-08-2024) | prevención y sanción de acoso laboral y sexual; protocolo de denuncia | `(no aplica: software de gestión de clientes y contratos sin gestión de personal ni canal de denuncias internas)` |
-| ISO/IEC 27001 | **Ley 21.663** (marco de ciberseguridad; vigente) | principios de seguridad por diseño y por defecto en sistemas de información | principios de defensa en profundidad, control de acceso y mitigación de vulnerabilidades de OWASP Top 10 |
-
-**Ley 21.719 — plazo real, no hipotético:** no deroga la Ley 19.628, la modifica sustituyendo gran parte de su articulado; el cuerpo legal sigue citándose como 19.628 en muchos textos. Crea la Agencia de Protección de Datos Personales (APDP) con potestad de fiscalizar y sancionar (multas de hasta $1.400 millones por infracción grave, o hasta 4% de los ingresos anuales en las más graves) e incorpora portabilidad además de los derechos ARCO. **Agenda retrasada:** al 2026, la APDP no está operativa — el gobierno evalúa postergar la entrada en vigencia hasta 2027 por demora en la conformación del Consejo Directivo. Si este proyecto trata datos personales y opera en Chile, el trabajo de cumplimiento se planifica **antes** de la entrada en vigencia efectiva, no después.
-
-Obligaciones que se traducen en trabajo técnico dentro del repositorio:
-
-| Obligación | Qué implica en el código o la infraestructura |
-| --- | --- |
-| Registro de actividades de tratamiento (RAT) | inventario de qué datos personales toca cada componente: RUT, nombres, correos, teléfonos, direcciones, cuentas bancarias en tabla `clientes`, credenciales en `usuarios`, y documentos PDF en `contratos` |
-| Base de licitud declarada | ejecución de contrato comercial y consentimiento explícito al registrar clientes o empresas |
-| Derechos ARCO + portabilidad | funcionalidad de actualización y eliminación de clientes (`DELETE /clientes/:id`) y descarga de documentos de contrato en PDF |
-| Notificación de brechas | procedimiento técnico y operativo para registrar y notificar incidentes de seguridad que afecten la base de datos PostgreSQL |
-| Evaluación de impacto (EIPD) | `(no aplica: software de gestión empresarial sin perfilamiento automatizado masivo ni vigilancia)` |
-| Delegado de Protección de Datos | `(no aplica: entidad que no procesa datos sensibles a gran escala ni opera como servicio público)` |
-| Contratos con encargados | acuerdos de confidencialidad y cláusulas de procesamiento seguro con proveedores de infraestructura Docker / Cloud |
-
-Estos puntos tienen contraparte técnica directa en 17.2: el RAT se apoya en A.8.11/A.8.10 (enmascaramiento y eliminación), la notificación de brechas en A.8.15/A.8.16 (registro y monitoreo en tabla `auditoria`) y los derechos ARCO en A.8.3 (restricción y control de acceso).
-
-Esta tabla es orientación técnica de implementación, no asesoría legal: el alcance real de cada ley sobre este proyecto lo define el área legal, no el equipo de desarrollo ni el agente.
