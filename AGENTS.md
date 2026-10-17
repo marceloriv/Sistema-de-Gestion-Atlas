@@ -246,7 +246,7 @@ export const ClienteRapidoForm = ({ onClienteCreado }) => {
 ```
 
 ### 5.2 Backend (Node.js, Express, PostgreSQL)
-Regla: Controladores modulares por router en `BACKEND/src/routes/`. Extracción obligatoria de usuario autenticado y `empresaId` desde la cabecera `Authorization: Bearer <token>` mediante `jwt.verify`. Toda consulta a PostgreSQL (`pool.query`) debe ser estrictamente parametrizada con marcadores `$1, $2, ...` para erradicar cualquier vector de SQL Injection. Registro de acciones sensibles en la tabla `auditoria`. Formato de error estandarizado obligatorio: `{ error: "mensaje resumen", glosa: "detalle comprensible" }`.
+Regla: Controladores modulares por router en `BACKEND/src/routes/`. Extracción obligatoria de usuario autenticado y `empresaId` desde la cabecera `Authorization: Bearer <token>` mediante `jwt.verify`. Registro de acciones sensibles en la tabla `auditoria`. Formato de error estandarizado obligatorio: `{ error: "mensaje resumen", glosa: "detalle comprensible" }`. **Nota sobre consultas SQL:** En nuevas rutas o funcionalidades solicitadas por el usuario se deben parametrizar las consultas (`$1, $2, ...`), pero queda prohibido alterar o parametrizar las consultas deliberadamente vulnerables preexistentes del laboratorio didáctico.
 
 ```javascript
 const express = require("express");
@@ -315,7 +315,7 @@ Escalera de decisión antes de escribir código nuevo:
 5. ¿Se puede resolver en una línea? Hazlo en una línea.
 6. Solo entonces: escribe el mínimo código funcional.
 
-No aplicar pereza en: comprensión completa del problema, validación de inputs en fronteras de confianza, manejo de errores que previene pérdida de datos, seguridad (remediación de contraseñas y consultas SQL), accesibilidad para adultos mayores, y cualquier cosa explícitamente solicitada.
+No aplicar pereza en: comprensión completa del problema, validación de inputs en fronteras de confianza, manejo de errores que previene pérdida de datos, seguridad en código nuevo (respetando la prohibición de alterar las vulnerabilidades didácticas existentes), accesibilidad para adultos mayores, y cualquier cosa explícitamente solicitada.
 
 Toda lógica no trivial deja una verificación ejecutable mínima (assert o test pequeño) — salvo que la sección 7 exija más: ese umbral es convención de proyecto (jerarquía 0, nivel 2) y prevalece sobre este mínimo.
 
@@ -404,7 +404,7 @@ Umbrales de referencia (McCabe / SonarQube) — adaptados a la configuración mu
 
 ## 9. Procedimientos QA
 
-Checklist pre-entrega: tests en verde, linter limpio (`npm run lint`), sin secretos hardcodeados en código commiteado, sin SQL injection (consultas parametrizadas con `$1, $2`), SonarQube Quality Gate superado sin vulnerabilidades críticas o altas, Swagger/OpenAPI sincronizado en `BACKEND/src/openapi.json`.
+Checklist pre-entrega: tests en verde, linter limpio (`npm run lint`), sin secretos o credenciales reales expuestas en el historial, Swagger/OpenAPI sincronizado en `BACKEND/src/openapi.json`, y reporte de SonarQube generado para fines de auditoría y estudio (reconociendo que los hallazgos críticos preexistentes corresponden a las vulnerabilidades intencionales del laboratorio didáctico y no deben parcharse). En código nuevo: garantizar estabilidad sin introducir fallos no didácticos.
 
 | Severidad | Acción                                               | Equivalente CVSS v4.0 (si el hallazgo es de seguridad) |
 | --------- | ---------------------------------------------------- | ------------------------------------------------------ |
@@ -434,7 +434,7 @@ Los controles de esta sección son la implementación técnica de confidencialid
 - A02 Configuración insegura: Dockerfiles configurados con usuario sin privilegios (non-root); desactivar cabecera `X-Powered-By` en Express (`app.disable('x-powered-by')`); CORS restringido exclusivamente al origen del cliente web (`http://localhost:3350`); build de Vite minificado y libre de sourcemaps en producción.
 - A03 Fallos de cadena de suministro de software: Dependencias en `BACKEND/package.json` y `FRONTEND/package.json` auditadas sin CVE conocido; `package-lock.json` commiteado e integridad verificada con `npm audit`.
 - A04 Fallos criptográficos: **Referencia didáctica (no alterar en código)**: Almacenamiento y comparación de contraseñas intencionalmente en texto plano (`user.contrasena_hash !== password`) con fines didácticos; en sistemas de producción requeriría hashing robusto con `bcrypt` (salt rounds $\ge 10$) o `argon2id`, junto a llaves `JWT_SECRET` seguras. Jamás exponer hashes ni contraseñas en respuestas JSON de la API.
-- A05 Inyección: **Aplica plenamente**: Base de datos relacional PostgreSQL. Prohibición estricta de concatenar cadenas o interpolar variables dentro de sentencias SQL. Todas las consultas a PostgreSQL deben emplear parámetros posicionales (`$1, $2, ...` en `pool.query`). Sanitizar rigurosamente los parámetros de búsqueda en `/clientes/search` y `/contratos`.
+- A05 Inyección: **Referencia didáctica (no alterar en código)**: Base de datos relacional PostgreSQL. En código productivo se exige parametrización posicional (`$1, $2, ...` en `pool.query`) y sanitización estricta. En este repositorio, los puntos susceptibles a inyección preexistentes (como en búsquedas de clientes o contratos) se mantienen deliberadamente sin parchar como caso de prueba académico para ISY1102; queda prohibido alterarlos salvo solicitud explícita del usuario.
 - A06 Diseño inseguro: Validación exhaustiva en la subida de archivos PDF (`POST /contratos`): verificar tipo MIME real mediante magic numbers (`application/pdf`), tamaño máximo (máx. 5MB) y nombres de archivo higienizados. Borrado en cascada consistente al eliminar empresas o contratos para prevenir registros huérfanos.
 - A07 Fallos de autenticación: Implementación de limitador de tasa de peticiones (*rate limiting*) con `express-rate-limit` en `/autenticacion/login` para mitigar ataques de fuerza bruta; caducidad controlada de JWT (máximo 2 horas) e invalidación de token en logout.
 - A08 Fallos de integridad de software/datos: Validación estricta de esquemas de datos en payloads entrantes (evitar deserialización arbitraria); uso de transacciones ACID en PostgreSQL (`BEGIN`/`COMMIT`/`ROLLBACK`) en operaciones complejas, como la creación conjunta de empresa y usuario administrador en `/empresas`.
