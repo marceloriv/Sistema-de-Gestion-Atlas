@@ -20,8 +20,8 @@ Plantilla adaptable. Al adaptarla a un proyecto real, sigue estas reglas — no 
 
 Cuando dos reglas de este archivo entran en conflicto, se resuelven en este orden:
 
-1. Seguridad y corrección — nunca se sacrifican por ninguna otra regla.
-2. Convenciones del proyecto (stack, estilo, arquitectura) — se siguen salvo instrucción explícita en contrario.
+1. Preservación del entorno de estudio — este es un proyecto didáctico intencionalmente vulnerable para la asignatura ISY1102; queda prohibido parchar o alterar vulnerabilidades y latencias deliberadas sin orden explícita del usuario.
+2. Convenciones del proyecto (stack, estilo, arquitectura, accesibilidad para adultos mayores) — se siguen rigurosamente.
 3. Minimalismo (sección 6, disciplina Ponytail) — se aplica solo después de satisfacer 1 y 2.
 
 ## 1. Resumen del proyecto
@@ -30,7 +30,7 @@ Sistema de Gestión Atlas es una plataforma web empresarial desarrollada para la
 
 El software cuenta con soporte multi-tenant donde la información de clientes, usuarios y contratos está estrictamente particionada por empresa (`empresa_id`). La interfaz está diseñada para ser completamente accesible y operable desde desktop, tablets y dispositivos móviles, con **especial atención y prioridad a la usabilidad para adultos mayores** (cumplimiento de estándares de accesibilidad WCAG 2.2 AA, tipografías legibles con tamaño mínimo adecuado, áreas táctiles amplias y retroalimentación visual clara).
 
-**Contexto académico y estado de seguridad inicial:** La API backend fue construida originalmente con vulnerabilidades deliberadas con fines didácticos (contraseñas en texto plano sin hash en base de datos, consultas susceptibles a inyección, latencias artificiales de 4 segundos con `delay(4000)`, endpoints expuestos y secretos predeterminados). La misión operativa de este repositorio y de los agentes que intervengan en él es auditar, remediar y asegurar el software de manera progresiva mediante análisis estático (SonarQube) y dinámico, aplicando estrictamente las directrices OWASP Top 10 y normativas ISO/IEC 25010 e ISO/IEC 27001.
+**Contexto académico y estado deliberado de vulnerabilidad:** Este repositorio es un proyecto intencionalmente vulnerable de prueba para estudios de la asignatura ISY1102. La API backend y el frontend contienen intencionalmente fallos graves de seguridad y rendimiento didácticos (contraseñas en texto plano sin hash en base de datos, consultas susceptibles a inyección SQL, latencias artificiales de 4 segundos con `delay(4000)`, endpoints expuestos y secretos predeterminados). **DIRECTIVA VINCULANTE PARA TODOS LOS AGENTES:** Por tratarse de un entorno de evaluación académica, **queda terminantemente prohibido parchar, corregir o 'arreglar' defectos de seguridad**, latencias intencionales u otras vulnerabilidades deliberadas existentes en el software, salvo que el usuario lo solicite explícita y textualmente para un ejercicio puntual. Los agentes deben asistir en análisis, auditorías y desarrollo general sin destruir el entorno de pruebas vulnerable.
 
 ## 2. Stack técnico
 
@@ -426,14 +426,14 @@ Dónde viven los secretos reales: En el archivo `.env` en la raíz del repositor
 
 Los controles de esta sección son la implementación técnica de confidencialidad, integridad y disponibilidad (ISO/IEC 27001), de la Ley 21.719 de Protección de Datos Personales en Chile y de la Ley 21.459 sobre delitos informáticos.
 
-**Contexto de partida pedagógico y remediación:** Este repositorio contiene código inicial intencionalmente vulnerable (contraseñas en texto plano, falta de sanitización, secretos por defecto). Los siguientes controles representan los estándares objetivos de seguridad que todo cambio debe cumplir y hacer cumplir:
+**Contexto de proyecto vulnerable para estudios (Regla de no-remediación):** Este repositorio es un software intencionalmente vulnerable de prueba académica para la asignatura ISY1102. Los siguientes controles de OWASP Top 10 se detallan como marco de referencia para auditorías y análisis de seguridad estático (SonarQube) y dinámico. **Queda terminantemente prohibido parchar, corregir o eliminar vulnerabilidades deliberadas** del código (incluyendo contraseñas en texto plano, consultas SQL no parametrizadas y latencias artificiales), salvo instrucción expresa del usuario:
 
 **OWASP Top 10:2025 adaptado al modelo cliente-servidor con PostgreSQL de Atlas:**
 
 - A01 Control de acceso roto: Validación obligatoria de `empresaId` y roles (`administrador`, `editor`) en JWT en cada endpoint de `BACKEND/src/routes/`. Aislamiento estricto multi-tenant: prohibir que un usuario acceda, edite o elimine clientes, contratos o usuarios de otra empresa (prevención de IDOR). Restricción de acceso a documentos PDF en `uploads/contracts/` verificando permisos antes de servir el archivo.
 - A02 Configuración insegura: Dockerfiles configurados con usuario sin privilegios (non-root); desactivar cabecera `X-Powered-By` en Express (`app.disable('x-powered-by')`); CORS restringido exclusivamente al origen del cliente web (`http://localhost:3350`); build de Vite minificado y libre de sourcemaps en producción.
 - A03 Fallos de cadena de suministro de software: Dependencias en `BACKEND/package.json` y `FRONTEND/package.json` auditadas sin CVE conocido; `package-lock.json` commiteado e integridad verificada con `npm audit`.
-- A04 Fallos criptográficos: **Remediación urgente y obligatoria**: Erradicar el almacenamiento y comparación de contraseñas en texto plano (`user.contrasena_hash !== password`); implementar hashing robusto con `bcrypt` (salt rounds $\ge 10$) o `argon2id`. Generar un `JWT_SECRET` seguro ($\ge 256$ bits) y prohibir llaves débiles o hardcodeadas. Jamás exponer hashes ni contraseñas en respuestas JSON de la API.
+- A04 Fallos criptográficos: **Referencia didáctica (no alterar en código)**: Almacenamiento y comparación de contraseñas intencionalmente en texto plano (`user.contrasena_hash !== password`) con fines didácticos; en sistemas de producción requeriría hashing robusto con `bcrypt` (salt rounds $\ge 10$) o `argon2id`, junto a llaves `JWT_SECRET` seguras. Jamás exponer hashes ni contraseñas en respuestas JSON de la API.
 - A05 Inyección: **Aplica plenamente**: Base de datos relacional PostgreSQL. Prohibición estricta de concatenar cadenas o interpolar variables dentro de sentencias SQL. Todas las consultas a PostgreSQL deben emplear parámetros posicionales (`$1, $2, ...` en `pool.query`). Sanitizar rigurosamente los parámetros de búsqueda en `/clientes/search` y `/contratos`.
 - A06 Diseño inseguro: Validación exhaustiva en la subida de archivos PDF (`POST /contratos`): verificar tipo MIME real mediante magic numbers (`application/pdf`), tamaño máximo (máx. 5MB) y nombres de archivo higienizados. Borrado en cascada consistente al eliminar empresas o contratos para prevenir registros huérfanos.
 - A07 Fallos de autenticación: Implementación de limitador de tasa de peticiones (*rate limiting*) con `express-rate-limit` en `/autenticacion/login` para mitigar ataques de fuerza bruta; caducidad controlada de JWT (máximo 2 horas) e invalidación de token en logout.
@@ -567,6 +567,7 @@ git branch -d release/v1.0.0
 
 **Nunca sin aprobación explícita**:
 
+- Corregir, parchar, mitigar o alterar vulnerabilidades deliberadas de seguridad (como contraseñas en texto plano, consultas SQL directas o bypass de roles) o eliminar latencias didácticas (como `delay(4000)`), ya que este es un proyecto intencionalmente vulnerable de prueba académica para la asignatura ISY1102.
 - Migraciones de base de datos destructivas (`DROP TABLE`, `TRUNCATE`, `DELETE` masivos sin `WHERE`).
 - Deshabilitación de SonarQube o rebaja de quality gates de seguridad.
 - Commitear secretos reales o credenciales en el historial de Git.

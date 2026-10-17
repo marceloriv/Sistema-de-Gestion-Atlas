@@ -86,7 +86,9 @@ const requiredAtlasTerms = [
   'sonar-project.properties',
   'docker compose',
   'Ley 21.719',
-  'Ley 21.459'
+  'Ley 21.459',
+  'proyecto intencionalmente vulnerable',
+  'prohibido parchar'
 ];
 
 requiredAtlasTerms.forEach(term => {
